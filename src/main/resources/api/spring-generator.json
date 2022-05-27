@@ -1,0 +1,19 @@
+{
+  "groupId": "com.homework",
+  "artifactId":	"conference-api",
+  "artifactDescription": "Conference API",
+  "artifactVersion": "0.0.1",
+  "basePackage": "com.homework.conference",
+  "apiPackage":	"com.homework.conference.adaptors.api",
+  "modelPackage": "com.homework.conference.adaptors.api.dto",
+  "configPackage":	"com.homework.conference.config",
+  "invokerPackage":	"com.homework.conference",
+  "documentationProvider": "springdoc",
+  "singleContentTypes": true,
+  "legacyDiscriminatorBehavior": false,
+  "performBeanValidation": true,
+  "interfaceOnly": true,
+  "skipDefaultInterface": true,
+  "additionalModelTypeAnnotations": "@lombok.Data",
+  "testOutput":	"src/test/java"
+}

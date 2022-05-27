@@ -1,0 +1,175 @@
+openapi: 3.0.3
+info:
+  title: Conference API
+  description: Conference API
+  version: 0.0.1
+paths:
+  /conferences:
+    post:
+      summary: Add new conference
+      operationId: addConference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConferenceDto"
+      responses:
+        '200':
+          description: Conference added
+        '400':
+          description: Bad request
+        '409':
+          description: Trying to add conference with existing name
+
+    get:
+      summary: Returns a list of conferences.
+      operationId: findConferences
+      responses:
+        '200':
+          description: A JSON array of conferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConferencesDto"
+
+  /conferences/{conferenceId}:
+    put:
+      summary: Update conference by conference
+      operationId: updateConference
+      parameters:
+        - in: path
+          name: conferenceId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the conference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConferenceDto"
+      responses:
+        '200':
+          description: Conference updated
+
+  /conferences/{conferenceId}/talks:
+    post:
+      summary: Add talk to conference
+      operationId: addTalkToConference
+      parameters:
+        - in: path
+          name: conferenceId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the conference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TalkDto"
+      responses:
+        '200':
+          description: Conference updated
+        '400':
+          description: Bad request
+        '409':
+          description: Trying to add talk with existing name
+
+    get:
+      summary: Returns a list of talk in conference.
+      operationId: findTalksByConference
+      parameters:
+        - in: path
+          name: conferenceId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the conference
+      responses:
+        '200':
+          description: A JSON array of talks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TalksDto"
+
+components:
+  schemas:
+    ConferenceDto:
+      type: object
+      required:
+        - name
+        - subject
+        - date
+        - participantsNumber
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Conference id
+          example: 10
+        name:
+          type: string
+          description: Conference name
+          example: Java Conf
+        subject:
+          type: string
+          description: Conference subject
+          example: Cloud Native Spring Boot Microservice
+        date:
+          type: string
+          format: date
+          description: Conference date
+          example: "2021-07-21"
+        participantsNumber:
+          type: integer
+          format: int64
+          description: Conference participants number
+          example: 20
+          maximum: 100
+        talks:
+          type: object
+          $ref: "#/components/schemas/TalksDto"
+
+
+    TalkDto:
+      type: object
+      required:
+        - name
+        - description
+        - author
+        - type
+      properties:
+        name:
+          type: string
+          description: Talk name
+          example: What Is Spring?
+        description:
+          type: string
+          description: Talk description
+          example: We'll begin with a brief history of the Spring Framework. From there, we discuss the layers of Spring and what each layer does. As we cover each layer, we'll give an overview of the key projects that comprise the layer. Finally, we'll show you how to take your Spring app and run it natively.
+        author:
+          type: string
+          description: Talk author name
+          example: Glenn Renfro
+        type:
+          type: string
+          $ref: "#/components/schemas/TalkTypeDto"
+
+    TalkTypeDto:
+      type: string
+      enum:
+        - TALK
+        - MASTERCLASS
+        - WORKSHOP
+
+    ConferencesDto:
+      type: array
+      items:
+        $ref: "#/components/schemas/ConferenceDto"
+
+    TalksDto:
+      type: array
+      items:
+        $ref: "#/components/schemas/TalkDto"
