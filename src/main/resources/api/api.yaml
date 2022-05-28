@@ -12,7 +12,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConferenceDto"
+              $ref: "#/components/schemas/AddConferenceRequestDto"
       responses:
         '200':
           description: Conference added
@@ -47,7 +47,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConferenceDto"
+              $ref: "#/components/schemas/UpdateConferenceRequestDto"
       responses:
         '200':
           description: Conference updated
@@ -109,6 +109,68 @@ components:
           format: int64
           description: Conference id
           example: 10
+        name:
+          type: string
+          description: Conference name
+          example: Java Conf
+        subject:
+          type: string
+          description: Conference subject
+          example: Cloud Native Spring Boot Microservice
+        date:
+          type: string
+          format: date
+          description: Conference date
+          example: "2021-07-21"
+        participantsNumber:
+          type: integer
+          format: int64
+          description: Conference participants number
+          example: 20
+          maximum: 100
+        talks:
+          type: object
+          $ref: "#/components/schemas/TalksDto"
+
+    AddConferenceRequestDto:
+      type: object
+      required:
+        - name
+        - subject
+        - date
+        - participantsNumber
+      properties:
+        name:
+          type: string
+          description: Conference name
+          example: Java Conf
+        subject:
+          type: string
+          description: Conference subject
+          example: Cloud Native Spring Boot Microservice
+        date:
+          type: string
+          format: date
+          description: Conference date
+          example: "2021-07-21"
+        participantsNumber:
+          type: integer
+          format: int64
+          description: Conference participants number
+          example: 20
+          maximum: 100
+        talks:
+          type: object
+          $ref: "#/components/schemas/TalksDto"
+
+    UpdateConferenceRequestDto:
+      type: object
+      required:
+        - name
+        - subject
+        - date
+        - participantsNumber
+      properties:
         name:
           type: string
           description: Conference name

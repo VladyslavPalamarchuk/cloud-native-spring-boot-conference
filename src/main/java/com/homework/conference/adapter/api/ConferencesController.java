@@ -1,8 +1,10 @@
 package com.homework.conference.adapter.api;
 
 import com.homework.adapter.api.ConferencesApi;
+import com.homework.adapter.model.AddConferenceRequestDto;
 import com.homework.adapter.model.ConferenceDto;
 import com.homework.adapter.model.TalkDto;
+import com.homework.adapter.model.UpdateConferenceRequestDto;
 import com.homework.conference.adapter.api.mapper.ConferenceMapper;
 import com.homework.conference.service.ConferenceService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class ConferencesController implements ConferencesApi {
     private final ConferenceMapper mapper;
 
     @Override
-    public ResponseEntity<Void> addConference(ConferenceDto conferenceDto) {
+    public ResponseEntity<Void> addConference(AddConferenceRequestDto conferenceDto) {
         if (conferenceDto.getParticipantsNumber() > 100) {
             return ResponseEntity.badRequest().build();
         }
@@ -46,7 +48,7 @@ public class ConferencesController implements ConferencesApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateConference(Integer conferenceId, ConferenceDto conferenceDto) {
+    public ResponseEntity<Void> updateConference(Integer conferenceId, UpdateConferenceRequestDto conferenceDto) {
         service.updateConference(conferenceId, mapper.map(conferenceDto));
         return ResponseEntity.ok().build();
     }

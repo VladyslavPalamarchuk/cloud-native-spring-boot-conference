@@ -50,7 +50,7 @@ public class ConferenceServiceImpl implements ConferenceService {
         verifyDuplicateConferenceName(conference);
 
         repository.save(conference.setId(conferenceId));
-        log.debug("Updated conference with id: {}", conference.getName());
+        log.debug("Updated conference with id: {}", conference.getId());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
             conference.getTalks().add(talk);
             repository.save(conference);
-            log.debug("Talk with id: {} was added to conference with id: {}", talk.getId(), conference.getId());
+            log.debug("Talk with name: {} was added to conference with id: {}", talk.getName(), conference.getId());
         }
     }
 

@@ -13,5 +13,6 @@ spring:
 
 logging:
   level:
+    com.homework.conference: DEBUG
     org:
       hibernate: ERROR

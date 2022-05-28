@@ -1,7 +1,9 @@
 package com.homework.conference.adapter.api.mapper;
 
+import com.homework.adapter.model.AddConferenceRequestDto;
 import com.homework.adapter.model.ConferenceDto;
 import com.homework.adapter.model.TalkDto;
+import com.homework.adapter.model.UpdateConferenceRequestDto;
 import com.homework.conference.domain.Conference;
 import com.homework.conference.domain.Talk;
 import org.mapstruct.Mapper;
@@ -15,7 +17,10 @@ import java.util.stream.Collectors;
 public interface ConferenceMapper {
 
     @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
-    Conference map(ConferenceDto conference);
+    Conference map(AddConferenceRequestDto addConferenceRequestDto);
+
+    @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
+    Conference map(UpdateConferenceRequestDto updateConferenceRequestDto);
 
     ConferenceDto map(Conference conference);
 
