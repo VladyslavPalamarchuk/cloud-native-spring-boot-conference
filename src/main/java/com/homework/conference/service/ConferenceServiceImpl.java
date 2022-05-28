@@ -6,6 +6,7 @@ import com.homework.conference.domain.Talk;
 import com.homework.conference.exception.DuplicateConferenceException;
 import com.homework.conference.exception.InvalidConferenceException;
 import com.homework.conference.exception.InvalidTalkException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -61,10 +62,11 @@ public class ConferenceServiceImpl implements ConferenceService {
 
             verifyDuplicateTalk(conference, talk);
             verifyAuthorTalksCount(conference, talk);
-            verifyTalkAddingDate(conference);
+            verifyTalkAddingDate(conference, talk.getName());
 
             conference.getTalks().add(talk);
             repository.save(conference);
+            log.debug("Talk with id: {} was added to conference with id: {}", talk.getId(), conference.getId());
         }
     }
 
@@ -78,6 +80,7 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     private void verifyDuplicateConferenceName(Conference conference) {
         if (repository.existsByName(conference.getName())) {
+            log.error("Conference with name: {} already exist", conference.getName());
             throw new DuplicateConferenceException();
         }
     }
@@ -87,12 +90,14 @@ public class ConferenceServiceImpl implements ConferenceService {
                 .anyMatch(t -> t.getName().equals(talk.getName()));
 
         if (isTalkExist) {
+            log.error("Talk with name: {} already exist", talk.getName());
             throw new InvalidTalkException();
         }
     }
 
     private void verifyConferenceIntersectionDate(Conference conference) {
         if (repository.existsByDate(conference.getDate())) {
+            log.error("Conference with date: {} already exist", conference.getDate());
             throw new InvalidConferenceException();
         }
     }
@@ -103,12 +108,14 @@ public class ConferenceServiceImpl implements ConferenceService {
                 .count();
 
         if (count >= MAX_AUTHOR_TALK_NUMBER) {
+            log.error("Author: {} not allowed to add more than {} talk to conference with id: {}", talk.getAuthor(), MAX_AUTHOR_TALK_NUMBER, conference.getId());
             throw new InvalidTalkException();
         }
     }
 
-    private void verifyTalkAddingDate(Conference conference) {
+    private void verifyTalkAddingDate(Conference conference, @NonNull String talk) {
         if (conference.getDate().getTime() - new Date().getTime() < MONTH_MILLIS) {
+            log.error("Fail to add talk with name: {} to conference with id: {} due to the deadline", talk, conference.getId());
             throw new InvalidTalkException();
         }
     }
