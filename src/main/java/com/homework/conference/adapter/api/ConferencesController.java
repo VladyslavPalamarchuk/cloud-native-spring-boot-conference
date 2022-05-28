@@ -4,14 +4,10 @@ import com.homework.adapter.api.ConferencesApi;
 import com.homework.adapter.model.ConferenceDto;
 import com.homework.adapter.model.TalkDto;
 import com.homework.conference.adapter.api.mapper.ConferenceMapper;
-import com.homework.conference.exception.DuplicateConferenceException;
-import com.homework.conference.exception.DuplicateTalkException;
 import com.homework.conference.service.ConferenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -53,10 +49,5 @@ public class ConferencesController implements ConferencesApi {
     public ResponseEntity<Void> updateConference(Integer conferenceId, ConferenceDto conferenceDto) {
         service.updateConference(conferenceId, mapper.map(conferenceDto));
         return ResponseEntity.ok().build();
-    }
-
-    @ExceptionHandler({DuplicateConferenceException.class, DuplicateTalkException.class})
-    public ResponseEntity<Void> handleNoSuchElementFoundException() {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }
