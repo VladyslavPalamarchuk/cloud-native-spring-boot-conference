@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ConferencesController implements ConferencesApi {
+public class ConferencesRestController implements ConferencesApi {
 
     private final ConferenceService service;
     private final ConferenceMapper mapper;
