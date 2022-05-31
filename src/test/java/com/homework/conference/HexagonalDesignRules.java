@@ -1,12 +1,10 @@
-package com.homework.conference.adapter.api;
+package com.homework.conference;
 
-import com.homework.conference.ConferenceApplication;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,7 +35,7 @@ public class HexagonalDesignRules {
             .layer(ADAPTOR_API).definedBy("..adapter.api..")
             .layer(ADAPTOR_PERSISTENCE).definedBy("..adapter.persistence..")
             .layer(CONFIG).definedBy("..config..")
-//            .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(SERVICE_IMPL, ADAPTOR_PERSISTENCE, ADAPTOR_API) // todo
+            .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(SERVICE, SERVICE_IMPL, ADAPTOR_PERSISTENCE, ADAPTOR_API)
             .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(SERVICE_IMPL, ADAPTOR_API, CONFIG)
             .whereLayer(SERVICE_IMPL).mayNotBeAccessedByAnyLayer()
             .whereLayer(ADAPTOR_API).mayNotBeAccessedByAnyLayer()

@@ -1,6 +1,6 @@
 package com.homework.conference.service.impl;
 
-import com.homework.conference.adapter.persistence.PersistenceGateway;
+import com.homework.conference.adapter.persistence.ConferenceRepository;
 import com.homework.conference.domain.Conference;
 import com.homework.conference.domain.Talk;
 import com.homework.conference.service.ConferenceService;
@@ -26,7 +26,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     private static final long MONTH_MILLIS = 2629800000L;
     private static final int MAX_AUTHOR_TALK_NUMBER = 3;
 
-    private final PersistenceGateway persistenceGateway;
+    private final ConferenceRepository conferenceRepository;
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
@@ -34,14 +34,14 @@ public class ConferenceServiceImpl implements ConferenceService {
         verifyDuplicateConferenceName(conference);
         verifyConferenceIntersectionDate(conference);
 
-        persistenceGateway.save(conference);
+        conferenceRepository.save(conference);
         log.debug("Saved new conference with name: {}", conference.getName());
     }
 
     @Override
     @Transactional
     public List<Conference> getAllConferences() {
-        return persistenceGateway.findAll();
+        return conferenceRepository.findAll();
     }
 
     @Override
@@ -49,22 +49,22 @@ public class ConferenceServiceImpl implements ConferenceService {
     public void updateConference(long conferenceId, Conference conference) {
         verifyDuplicateConferenceName(conference);
 
-        persistenceGateway.save(conference.setId(conferenceId));
+        conferenceRepository.save(conference.setId(conferenceId));
         log.debug("Updated conference with id: {}", conference.getId());
     }
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void addTalk(long conferenceId, Talk talk) {
-        Optional<Conference> conferenceEntity = persistenceGateway.findById(conferenceId); // todo refactor
-        if (conferenceEntity.isPresent()) {
-            Conference conference = conferenceEntity.get();
+        Optional<Conference> conferenceById = conferenceRepository.findById(conferenceId); // todo refactor
+        if (conferenceById.isPresent()) {
+            Conference conference = conferenceById.get();
             verifyDuplicateTalk(conference, talk);
             verifyAuthorTalksCount(conference, talk);
             verifyTalkAddingDate(conference, talk.getName());
 
             conference.getTalks().add(talk);
-            persistenceGateway.save(conference);
+            conferenceRepository.save(conference);
             log.debug("Talk with name: {} was added to conference with id: {}", talk.getName(), conference.getId());
         }
     }
@@ -72,13 +72,13 @@ public class ConferenceServiceImpl implements ConferenceService {
     @Override
     @Transactional
     public List<Talk> getTalksByConference(long conferenceId) {
-        return persistenceGateway.findById(conferenceId)
+        return conferenceRepository.findById(conferenceId)
                 .map(Conference::getTalks)
                 .orElse(Collections.emptyList());
     }
 
     private void verifyDuplicateConferenceName(Conference conference) {
-        if (persistenceGateway.existsByName(conference.getName())) {
+        if (conferenceRepository.existsByName(conference.getName())) {
             log.error("Conference with name: {} already exist", conference.getName());
             throw new DuplicateConferenceException();
         }
@@ -95,7 +95,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     private void verifyConferenceIntersectionDate(Conference conference) {
-        if (persistenceGateway.existsByDate(conference.getDate())) {
+        if (conferenceRepository.existsByDate(conference.getDate())) {
             log.error("Conference with date: {} already exist", conference.getDate());
             throw new InvalidConferenceException();
         }

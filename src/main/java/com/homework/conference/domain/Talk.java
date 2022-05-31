@@ -1,17 +1,29 @@
 package com.homework.conference.domain;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Data
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "TALK")
+@Getter
+@Setter
 @Accessors(chain = true)
 @RequiredArgsConstructor
 @NoArgsConstructor
 public class Talk {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NonNull
