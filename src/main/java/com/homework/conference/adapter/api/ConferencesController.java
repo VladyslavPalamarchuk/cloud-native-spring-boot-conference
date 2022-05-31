@@ -7,9 +7,13 @@ import com.homework.adapter.model.TalkDto;
 import com.homework.adapter.model.UpdateConferenceRequestDto;
 import com.homework.conference.adapter.api.mapper.ConferenceMapper;
 import com.homework.conference.service.ConferenceService;
+import com.homework.conference.service.exception.DuplicateConferenceException;
+import com.homework.conference.service.exception.DuplicateTalkException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,29 +31,34 @@ public class ConferencesController implements ConferencesApi {
         if (conferenceDto.getParticipantsNumber() > 100) {
             return ResponseEntity.badRequest().build();
         }
-        service.addConference(mapper.map(conferenceDto));
+        service.addConference(mapper.toConference(conferenceDto));
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<Void> addTalkToConference(Integer conferenceId, TalkDto talkDto) {
-        service.addTalk(conferenceId, mapper.map(talkDto));
+        service.addTalk(conferenceId, mapper.toTalk(talkDto));
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<List<ConferenceDto>> findConferences() {
-        return ResponseEntity.ok().body(mapper.mapConferences(service.getAllConferences()));
+        return ResponseEntity.ok().body(mapper.toConferences(service.getAllConferences()));
     }
 
     @Override
     public ResponseEntity<List<TalkDto>> findTalksByConference(Integer conferenceId) {
-        return ResponseEntity.ok().body(mapper.mapTalks(service.getTalksByConference(conferenceId)));
+        return ResponseEntity.ok().body(mapper.toTalks(service.getTalksByConference(conferenceId)));
     }
 
     @Override
     public ResponseEntity<Void> updateConference(Integer conferenceId, UpdateConferenceRequestDto conferenceDto) {
-        service.updateConference(conferenceId, mapper.map(conferenceDto));
+        service.updateConference(conferenceId, mapper.toConference(conferenceDto));
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({DuplicateConferenceException.class, DuplicateTalkException.class})
+    public ResponseEntity<Void> handleNoSuchElementFoundException() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 }

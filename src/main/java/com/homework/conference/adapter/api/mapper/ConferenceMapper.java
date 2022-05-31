@@ -17,22 +17,22 @@ import java.util.stream.Collectors;
 public interface ConferenceMapper {
 
     @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
-    Conference map(AddConferenceRequestDto addConferenceRequestDto);
+    Conference toConference(AddConferenceRequestDto addConferenceRequestDto);
 
     @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
-    Conference map(UpdateConferenceRequestDto updateConferenceRequestDto);
+    Conference toConference(UpdateConferenceRequestDto updateConferenceRequestDto);
 
-    ConferenceDto map(Conference conference);
+    ConferenceDto toConferenceDto(Conference conference);
 
-    Talk map(TalkDto talk);
+    Talk toTalk(TalkDto talk);
 
-    TalkDto map(Talk talk);
+    TalkDto toTalkDto(Talk talk);
 
-    default List<TalkDto> mapTalks(List<Talk> talks) {
-        return talks.stream().map(this::map).collect(Collectors.toList());
+    default List<TalkDto> toTalks(List<Talk> talks) {
+        return talks.stream().map(this::toTalkDto).collect(Collectors.toList());
     }
 
-    default List<ConferenceDto> mapConferences(List<Conference> talks) {
-        return talks.stream().map(this::map).collect(Collectors.toList());
+    default List<ConferenceDto> toConferences(List<Conference> talks) {
+        return talks.stream().map(this::toConferenceDto).collect(Collectors.toList());
     }
 }
