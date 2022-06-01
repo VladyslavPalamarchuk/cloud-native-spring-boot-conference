@@ -5,7 +5,7 @@
   "artifactVersion": "0.0.1",
   "basePackage": "com.homework.conference",
   "apiPackage": "com.homework.conference.adaptors.api",
-  "modelPackage": "com.homework.conference.adaptors.api.dto",
+  "modelPackage": "com.homework.conference.adaptors.api.dto", // todo move to my package
   "configPackage": "com.homework.conference.config",
   "invokerPackage": "com.homework.conference",
   "documentationProvider": "springdoc",

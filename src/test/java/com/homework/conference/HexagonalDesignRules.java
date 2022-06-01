@@ -20,6 +20,7 @@ public class HexagonalDesignRules {
     static final String DOMAIN = "domain";
     static final String SERVICE = "service";
     static final String SERVICE_IMPL = "service-impl";
+    static final String SERVICE_MAPPER = "service-mapper";
 
     static final String ADAPTOR_API = "api-adapter";
     static final String ADAPTOR_PERSISTENCE = "persistence-adapter";
@@ -32,12 +33,14 @@ public class HexagonalDesignRules {
             .layer(DOMAIN).definedBy("..domain..")
             .layer(SERVICE).definedBy("..service", "..service.exception..")
             .layer(SERVICE_IMPL).definedBy("..service.impl..")
+            .layer(SERVICE_MAPPER).definedBy("..service.mapper..")
             .layer(ADAPTOR_API).definedBy("..adapter.api..")
             .layer(ADAPTOR_PERSISTENCE).definedBy("..adapter.persistence..")
             .layer(CONFIG).definedBy("..config..")
-            .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(SERVICE, SERVICE_IMPL, ADAPTOR_PERSISTENCE, ADAPTOR_API)
+            .whereLayer(DOMAIN).mayOnlyBeAccessedByLayers(SERVICE, SERVICE_IMPL, SERVICE_MAPPER, ADAPTOR_PERSISTENCE)
             .whereLayer(SERVICE).mayOnlyBeAccessedByLayers(SERVICE_IMPL, ADAPTOR_API, CONFIG)
             .whereLayer(SERVICE_IMPL).mayNotBeAccessedByAnyLayer()
+            .whereLayer(SERVICE_MAPPER).mayOnlyBeAccessedByLayers(SERVICE_IMPL)
             .whereLayer(ADAPTOR_API).mayNotBeAccessedByAnyLayer()
             .whereLayer(ADAPTOR_PERSISTENCE).mayOnlyBeAccessedByLayers(SERVICE_IMPL)
             .whereLayer(CONFIG).mayNotBeAccessedByAnyLayer();

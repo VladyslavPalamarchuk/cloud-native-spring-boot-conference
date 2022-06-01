@@ -1,5 +1,7 @@
 package com.homework.conference.adapter.persistence;
 
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.spring.api.DBRider;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-//@DBRider
+@DBRider
 @ActiveProfiles("test")
 class ConferenceRepositoryTest {
 
@@ -24,6 +26,12 @@ class ConferenceRepositoryTest {
         @Test
         void whenNoConferences_thenExistingByNameFalse() {
             assertThat(repository.existsByName("unknown")).isFalse();
+        }
+
+        @Test
+        @DataSet("exist-conference.xml")
+        void whenConferencesExist_thenExistingByNameTrue() {
+            assertThat(repository.existsByName("conf-name")).isTrue();
         }
     }
 

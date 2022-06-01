@@ -12,14 +12,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddConferenceRequestDto"
+              $ref: "#/components/schemas/AddConferenceRequestApiDto"
       responses:
         '200':
           description: Conference added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConferenceApiDto"
         '400':
           description: Bad request
         '409':
-          description: Trying to add conference with existing name
+          description: Trying to add conference with existing name or date
 
     get:
       summary: Returns a list of conferences.
@@ -30,11 +34,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ConferencesDto"
+                $ref: "#/components/schemas/ConferencesApiDto"
 
   /conferences/{conferenceId}:
     put:
-      summary: Update conference by conference
+      summary: Update conference by id
       operationId: updateConference
       parameters:
         - in: path
@@ -48,7 +52,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateConferenceRequestDto"
+              $ref: "#/components/schemas/UpdateConferenceRequestApiDto"
       responses:
         '200':
           description: Conference updated
@@ -69,10 +73,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AddTalkRequestDto"
+              $ref: "#/components/schemas/AddTalkRequestApiDto"
       responses:
         '200':
           description: Conference updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TalkApiDto"
         '400':
           description: Bad request
         '409':
@@ -95,13 +103,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TalksDto"
+                $ref: "#/components/schemas/TalksApiDto"
 
 components:
   schemas:
-    ConferenceDto:
+    ConferenceApiDto:
       type: object
       required:
+        - id
         - name
         - subject
         - date
@@ -130,11 +139,8 @@ components:
           description: Conference participants number
           example: 20
           maximum: 100
-        talks:
-          type: object
-          $ref: "#/components/schemas/TalksDto"
 
-    AddConferenceRequestDto:
+    AddConferenceRequestApiDto:
       type: object
       required:
         - name
@@ -160,11 +166,8 @@ components:
           description: Conference participants number
           example: 20
           maximum: 100
-        talks:
-          type: object
-          $ref: "#/components/schemas/TalksDto"
 
-    UpdateConferenceRequestDto:
+    UpdateConferenceRequestApiDto:
       type: object
       required:
         - name
@@ -190,12 +193,8 @@ components:
           description: Conference participants number
           example: 20
           maximum: 100
-        talks:
-          type: object
-          $ref: "#/components/schemas/TalksDto"
 
-
-    TalkDto:
+    TalkApiDto:
       type: object
       required:
         - id
@@ -221,9 +220,9 @@ components:
           example: Glenn Renfro
         type:
           type: string
-          $ref: "#/components/schemas/TalkTypeDto"
+          $ref: "#/components/schemas/TalkTypeApiDto"
 
-    AddTalkRequestDto:
+    AddTalkRequestApiDto:
       type: object
       required:
         - name
@@ -245,21 +244,21 @@ components:
           example: Glenn Renfro
         type:
           type: string
-          $ref: "#/components/schemas/TalkTypeDto"
+          $ref: "#/components/schemas/TalkTypeApiDto"
 
-    TalkTypeDto:
+    TalkTypeApiDto:
       type: string
       enum:
         - TALK
         - MASTERCLASS
         - WORKSHOP
 
-    ConferencesDto:
+    ConferencesApiDto:
       type: array
       items:
-        $ref: "#/components/schemas/ConferenceDto"
+        $ref: "#/components/schemas/ConferenceApiDto"
 
-    TalksDto:
+    TalksApiDto:
       type: array
       items:
-        $ref: "#/components/schemas/TalkDto"
+        $ref: "#/components/schemas/TalkApiDto"

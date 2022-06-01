@@ -1,0 +1,6 @@
+<!DOCTYPE dataset SYSTEM "src/test/resources/datasets/database.dtd">
+
+<dataset>
+    <conference/>
+    <conference id="1" date="2025-01-01" participants_number="50" subject="subject" name="conf-name"/>
+</dataset>

@@ -3,10 +3,14 @@ package com.homework.conference.service;
 import com.homework.conference.adapter.persistence.ConferenceRepository;
 import com.homework.conference.domain.Conference;
 import com.homework.conference.domain.Talk;
+import com.homework.conference.domain.TalkType;
+import com.homework.conference.service.dto.AddOrUpdateConferenceRequestDto;
+import com.homework.conference.service.dto.AddTalkRequestDto;
+import com.homework.conference.service.dto.ConferenceDto;
+import com.homework.conference.service.dto.TalkTypeDto;
 import com.homework.conference.service.exception.DuplicateConferenceException;
-import com.homework.conference.service.exception.InvalidConferenceException;
-import com.homework.conference.service.exception.InvalidTalkException;
 import com.homework.conference.service.impl.ConferenceServiceImpl;
+import com.homework.conference.service.mapper.ConferenceServiceMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Long.MAX_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,24 +46,33 @@ class ConferenceServiceTest {
 
     @BeforeEach
     void init() {
-        service = new ConferenceServiceImpl(repository);
+        service = new ConferenceServiceImpl(repository, new ConferenceServiceMapperImpl());
     }
 
     @Test
     void addConference_happyPath() {
-        Conference conference = generateConference(Date.from(Instant.parse("2023-11-30T00:00:00.00Z")));
+        AddOrUpdateConferenceRequestDto addConferenceRequest = generateAddOrUpdateConferenceRequest(Date.from(Instant.parse("2023-11-30T00:00:00.00Z")));
+        Conference conference = new Conference()
+                .setId(CONFERENCE_ID)
+                .setName(addConferenceRequest.getName())
+                .setSubject(addConferenceRequest.getSubject())
+                .setParticipantsNumber(addConferenceRequest.getParticipantsNumber())
+                .setDate(addConferenceRequest.getDate());
 
         when(repository.existsByName(any())).thenReturn(false);
         when(repository.existsByDate(any())).thenReturn(false);
 
-        service.addConference(conference);
-        verify(repository).save(conference);
+        when(repository.save(any())).thenReturn(conference);
+
+        ConferenceDto savedConference = service.addConference(addConferenceRequest);
+        assertThat(savedConference.getId()).isEqualTo(CONFERENCE_ID);
+        assertThat(savedConference.getName()).isEqualTo("conf-name");
     }
 
     @Test
     void addConference_whenConferenceNameAlreadyExist_thenDoNotProcessConference() {
         when(repository.existsByName("conf-name")).thenReturn(true);
-        assertThrows(DuplicateConferenceException.class, () -> service.addConference(generateConference(Date.from(Instant.parse("2023-11-30T18:35:24.00Z")))));
+        assertThrows(DuplicateConferenceException.class, () -> service.addConference(generateAddOrUpdateConferenceRequest(Date.from(Instant.parse("2023-11-30T18:35:24.00Z")))));
     }
 
     @Test
@@ -68,15 +82,15 @@ class ConferenceServiceTest {
         when(repository.existsByName("conf-name")).thenReturn(false);
         when(repository.existsByDate(conferenceDate)).thenReturn(true);
 
-        assertThrows(InvalidConferenceException.class, () -> service.addConference(generateConference(conferenceDate)));
+        assertThrows(IllegalArgumentException.class, () -> service.addConference(generateAddOrUpdateConferenceRequest(conferenceDate)));
     }
 
     @Test
     void updateConference_happyPath() {
         when(repository.existsByName("conf-name")).thenReturn(false);
 
-        service.updateConference(CONFERENCE_ID, generateConference(Date.from(Instant.parse("2023-11-30T00:00:00.00Z"))));
-        verify(repository).save(conferenceCaptor.capture());
+        service.updateConference(CONFERENCE_ID, generateAddOrUpdateConferenceRequest(Date.from(Instant.parse("2023-11-30T00:00:00.00Z"))));
+        verify(repository).save(conferenceCaptor.capture()); // todo
 
         Conference conference = conferenceCaptor.getValue();
         assertThat(conference.getId()).isEqualTo(CONFERENCE_ID);
@@ -86,15 +100,22 @@ class ConferenceServiceTest {
     @Test
     void updateConference_whenConferenceNameAlreadyExist_thenDoNotProcessConference() {
         when(repository.existsByName("conf-name")).thenReturn(true);
-        assertThrows(DuplicateConferenceException.class, () -> service.updateConference(CONFERENCE_ID, generateConference(Date.from(Instant.parse("2023-11-30T18:35:24.00Z")))));
+        assertThrows(DuplicateConferenceException.class, () -> service.updateConference(CONFERENCE_ID, generateAddOrUpdateConferenceRequest(Date.from(Instant.parse("2023-11-30T18:35:24.00Z")))));
     }
 
     @Test
     void addTalk_happyPath() {
-        when(repository.findById(CONFERENCE_ID))
-                .thenReturn(Optional.of(generateConference(new Date(Long.MAX_VALUE))));
+        Conference conference = new Conference()
+                .setId(CONFERENCE_ID)
+                .setName("conf-name")
+                .setSubject("subject")
+                .setParticipantsNumber(20)
+                .setDate(new Date(MAX_VALUE));
 
-        service.addTalk(CONFERENCE_ID, generateTalk("talk-name"));
+        when(repository.findById(CONFERENCE_ID))
+                .thenReturn(Optional.of(conference));
+
+        service.addTalk(CONFERENCE_ID, generateAddTalkRequest("talk-name"));
 
         verify(repository).save(conferenceCaptor.capture());
 
@@ -106,36 +127,64 @@ class ConferenceServiceTest {
 
     @Test
     void addTalk_whenDateLessThanMonth_thenSkipAddingTalk() {
-        when(repository.findById(CONFERENCE_ID))
-                .thenReturn(Optional.of(generateConference(new Date(0))));
+        Conference conference = new Conference()
+                .setId(CONFERENCE_ID)
+                .setName("conf-name")
+                .setSubject("subject")
+                .setParticipantsNumber(20)
+                .setDate(new Date(0));
 
-        assertThrows(InvalidTalkException.class, () -> service.addTalk(CONFERENCE_ID, generateTalk("talk-name")));
+        when(repository.findById(CONFERENCE_ID))
+                .thenReturn(Optional.of(conference));
+
+        assertThrows(IllegalArgumentException.class, () -> service.addTalk(CONFERENCE_ID, generateAddTalkRequest("talk-name")));
     }
 
     @Test
     void addTalk_whenAuthorHasMoreThan4Talks_thenSkipAddingTalk() {
-        Conference conference = generateConference(new Date(Long.MAX_VALUE));
-        conference.setTalks(List.of(
-                generateTalk("talk-name1"),
-                generateTalk("talk-name2"),
-                generateTalk("talk-name3"),
-                generateTalk("talk-name4"))
-        );
+        Conference conference = new Conference()
+                .setId(CONFERENCE_ID)
+                .setName("conf-name")
+                .setSubject("subject")
+                .setParticipantsNumber(20)
+                .setDate(new Date(MAX_VALUE))
+                .setTalks(List.of(
+                        generateTalk("talk-name1"),
+                        generateTalk("talk-name2"),
+                        generateTalk("talk-name3"),
+                        generateTalk("talk-name4")
+                ));
+
         when(repository.findById(CONFERENCE_ID))
                 .thenReturn(Optional.of(conference));
 
-        assertThrows(InvalidTalkException.class, () -> service.addTalk(CONFERENCE_ID, generateTalk("talk-name")));
+        assertThrows(IllegalArgumentException.class, () -> service.addTalk(CONFERENCE_ID, generateAddTalkRequest("talk-name")));
     }
 
     @Test
     void addTalk_whenDuplicateTalk_thenSkipAddingTalk() {
-        Conference conference = generateConference(new Date(Long.MAX_VALUE));
-        conference.setTalks(List.of(generateTalk("talk-name")));
+        Conference conference = new Conference()
+                .setId(CONFERENCE_ID)
+                .setName("conf-name")
+                .setSubject("subject")
+                .setParticipantsNumber(20)
+                .setDate(new Date(0))
+                .setTalks(List.of(
+                        generateTalk("talk-name")
+                ));
 
         when(repository.findById(CONFERENCE_ID))
                 .thenReturn(Optional.of(conference));
 
-        assertThrows(InvalidTalkException.class, () -> service.addTalk(CONFERENCE_ID, generateTalk("talk-name")));
+        assertThrows(IllegalArgumentException.class, () -> service.addTalk(CONFERENCE_ID, generateAddTalkRequest("talk-name")));
+    }
+
+    private AddTalkRequestDto generateAddTalkRequest(String name) {
+        return new AddTalkRequestDto()
+                .setName(name)
+                .setAuthor("author-name")
+                .setDescription("desc")
+                .setType(TalkTypeDto.TALK);
     }
 
     private Talk generateTalk(String name) {
@@ -143,12 +192,11 @@ class ConferenceServiceTest {
                 .setName(name)
                 .setAuthor("author-name")
                 .setDescription("desc")
-                .setType(Talk.TalkType.TALK);
+                .setType(TalkType.TALK);
     }
 
-    private Conference generateConference(Date date) {
-        return new Conference()
-                .setId(CONFERENCE_ID)
+    private AddOrUpdateConferenceRequestDto generateAddOrUpdateConferenceRequest(Date date) {
+        return new AddOrUpdateConferenceRequestDto()
                 .setName("conf-name")
                 .setSubject("conf-subject")
                 .setParticipantsNumber(10)

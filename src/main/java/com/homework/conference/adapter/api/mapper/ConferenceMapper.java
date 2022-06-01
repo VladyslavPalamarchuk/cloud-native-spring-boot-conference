@@ -1,41 +1,32 @@
 package com.homework.conference.adapter.api.mapper;
 
-import com.homework.adapter.model.AddConferenceRequestDto;
-import com.homework.adapter.model.AddTalkRequestDto;
-import com.homework.adapter.model.ConferenceDto;
-import com.homework.adapter.model.TalkDto;
-import com.homework.adapter.model.UpdateConferenceRequestDto;
-import com.homework.conference.domain.Conference;
-import com.homework.conference.domain.Talk;
+import com.homework.adapter.api.dto.AddConferenceRequestApiDto;
+import com.homework.adapter.api.dto.AddTalkRequestApiDto;
+import com.homework.adapter.api.dto.ConferenceApiDto;
+import com.homework.adapter.api.dto.TalkApiDto;
+import com.homework.adapter.api.dto.UpdateConferenceRequestApiDto;
+import com.homework.conference.service.dto.AddOrUpdateConferenceRequestDto;
+import com.homework.conference.service.dto.AddTalkRequestDto;
+import com.homework.conference.service.dto.ConferenceDto;
+import com.homework.conference.service.dto.TalkDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ConferenceMapper {
 
-    @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
-    Conference toConference(AddConferenceRequestDto addConferenceRequestDto);
+    AddOrUpdateConferenceRequestDto toAddOrUpdateConferenceRequest(AddConferenceRequestApiDto addConferenceRequest);
 
-    @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
-    Conference toConference(UpdateConferenceRequestDto updateConferenceRequestDto);
+    AddOrUpdateConferenceRequestDto toAddOrUpdateConferenceRequest(UpdateConferenceRequestApiDto updateConference);
 
-    ConferenceDto toConferenceDto(Conference conference);
+    AddTalkRequestDto toAddTalkDto(AddTalkRequestApiDto addTalkRequest);
 
-    Talk toTalk(AddTalkRequestDto talk);
+    List<ConferenceApiDto> toConferencesApiDto(List<ConferenceDto> conferences);
 
-    Talk toTalk(TalkDto talk);
+    List<TalkApiDto> toTalksApiDto(List<TalkDto> talks);
 
-    TalkDto toTalkDto(Talk talk);
+//    @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
 
-    default List<TalkDto> toTalks(List<Talk> talks) {
-        return talks.stream().map(this::toTalkDto).collect(Collectors.toList());
-    }
-
-    default List<ConferenceDto> toConferences(List<Conference> talks) {
-        return talks.stream().map(this::toConferenceDto).collect(Collectors.toList());
-    }
 }

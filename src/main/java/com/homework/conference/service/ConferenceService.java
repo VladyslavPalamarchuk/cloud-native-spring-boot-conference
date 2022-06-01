@@ -1,19 +1,21 @@
 package com.homework.conference.service;
 
-import com.homework.conference.domain.Conference;
-import com.homework.conference.domain.Talk;
+import com.homework.conference.service.dto.AddOrUpdateConferenceRequestDto;
+import com.homework.conference.service.dto.AddTalkRequestDto;
+import com.homework.conference.service.dto.ConferenceDto;
+import com.homework.conference.service.dto.TalkDto;
 
 import java.util.List;
 
 public interface ConferenceService {
 
-    void addConference(Conference conference);
+    ConferenceDto addConference(AddOrUpdateConferenceRequestDto conference);
 
-    void addTalk(long conferenceId, Talk talk);
+    TalkDto addTalk(long conferenceId, AddTalkRequestDto talk);
 
-    List<Conference> getAllConferences();
+    List<ConferenceDto> getAllConferences();
 
-    List<Talk> getTalksByConference(long conferenceId);
+    List<TalkDto> getTalksByConference(long conferenceId);
 
-    void updateConference(long conferenceId, Conference conference);
+    void updateConference(long conferenceId, AddOrUpdateConferenceRequestDto conference);
 }
