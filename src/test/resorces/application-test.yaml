@@ -1,0 +1,18 @@
+debug: true
+
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:11:///library?TC_REUSABLE=true
+    username: test
+    password: test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  jpa:
+    show-sql: true
+  test:
+    database:
+      replace: none
+
+logging:
+  level:
+    com.github.database.rider: DEBUG
+    org.springframework.test.context.cache: DEBUG

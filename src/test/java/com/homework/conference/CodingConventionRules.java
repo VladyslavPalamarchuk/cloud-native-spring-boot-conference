@@ -53,5 +53,5 @@ public class CodingConventionRules {
     ArchRule services_are_stateless_and_depend_on_interfaces =
             fields().that().areDeclaredInClassesThat().areAnnotatedWith(Service.class)
                     .should().beFinal()
-                    .andShould().bePrivate(); // todo
+                    .andShould().haveRawType(INTERFACES).orShould().beStatic();
 }
