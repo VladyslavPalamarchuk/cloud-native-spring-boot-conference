@@ -2,7 +2,7 @@ debug: true
 
 spring:
   datasource:
-    url: jdbc:tc:postgresql:11:///library?TC_REUSABLE=true
+    url: jdbc:tc:postgresql:11:///conference?TC_REUSABLE=true
     username: test
     password: test
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
