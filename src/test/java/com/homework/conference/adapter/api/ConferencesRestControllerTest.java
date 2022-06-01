@@ -2,10 +2,8 @@ package com.homework.conference.adapter.api;
 
 import com.homework.adapter.model.AddConferenceRequestDto;
 import com.homework.conference.adapter.api.mapper.ConferenceMapper;
-import com.homework.conference.adapter.api.mapper.ConferenceMapperImpl;
 import com.homework.conference.domain.Conference;
 import com.homework.conference.service.ConferenceService;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +19,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
@@ -78,12 +72,12 @@ class ConferencesRestControllerIntegrationTest {
         return mockMvc.perform(post("/conferences")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(String.format("""
-                        {
-                          "name": "%s",
-                          "subject": "%s",
-                          "date": "%s",
-                          "participantsNumber": %s
-                        }""",
+                                {
+                                  "name": "%s",
+                                  "subject": "%s",
+                                  "date": "%s",
+                                  "participantsNumber": %s
+                                }""",
                         conference.getName(),
                         conference.getSubject(),
                         conference.getDate(),
