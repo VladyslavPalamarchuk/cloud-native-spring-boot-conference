@@ -1,6 +1,7 @@
 package com.homework.conference.adapter.api.mapper;
 
 import com.homework.adapter.model.AddConferenceRequestDto;
+import com.homework.adapter.model.AddTalkRequestDto;
 import com.homework.adapter.model.ConferenceDto;
 import com.homework.adapter.model.TalkDto;
 import com.homework.adapter.model.UpdateConferenceRequestDto;
@@ -23,6 +24,8 @@ public interface ConferenceMapper {
     Conference toConference(UpdateConferenceRequestDto updateConferenceRequestDto);
 
     ConferenceDto toConferenceDto(Conference conference);
+
+    Talk toTalk(AddTalkRequestDto talk);
 
     Talk toTalk(TalkDto talk);
 

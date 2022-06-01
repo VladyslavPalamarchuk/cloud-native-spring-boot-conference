@@ -2,6 +2,7 @@ package com.homework.conference.adapter.api;
 
 import com.homework.adapter.api.ConferencesApi;
 import com.homework.adapter.model.AddConferenceRequestDto;
+import com.homework.adapter.model.AddTalkRequestDto;
 import com.homework.adapter.model.ConferenceDto;
 import com.homework.adapter.model.TalkDto;
 import com.homework.adapter.model.UpdateConferenceRequestDto;
@@ -36,8 +37,8 @@ public class ConferencesRestController implements ConferencesApi {
     }
 
     @Override
-    public ResponseEntity<Void> addTalkToConference(Integer conferenceId, TalkDto talkDto) {
-        service.addTalk(conferenceId, mapper.toTalk(talkDto));
+    public ResponseEntity<Void> addTalkToConference(Long conferenceId, AddTalkRequestDto talkRequestDto) {
+        service.addTalk(conferenceId, mapper.toTalk(talkRequestDto));
         return ResponseEntity.ok().build();
     }
 
@@ -47,17 +48,17 @@ public class ConferencesRestController implements ConferencesApi {
     }
 
     @Override
-    public ResponseEntity<List<TalkDto>> findTalksByConference(Integer conferenceId) {
+    public ResponseEntity<List<TalkDto>> findTalksByConference(Long conferenceId) {
         return ResponseEntity.ok().body(mapper.toTalks(service.getTalksByConference(conferenceId)));
     }
 
     @Override
-    public ResponseEntity<Void> updateConference(Integer conferenceId, UpdateConferenceRequestDto conferenceDto) {
+    public ResponseEntity<Void> updateConference(Long conferenceId, UpdateConferenceRequestDto conferenceDto) {
         service.updateConference(conferenceId, mapper.toConference(conferenceDto));
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler({DuplicateConferenceException.class, DuplicateTalkException.class})
+    @ExceptionHandler({DuplicateConferenceException.class, DuplicateTalkException.class,})
     public ResponseEntity<Void> handleNoSuchElementFoundException() {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
