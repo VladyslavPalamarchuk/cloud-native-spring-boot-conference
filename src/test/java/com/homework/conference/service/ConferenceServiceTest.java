@@ -46,7 +46,7 @@ class ConferenceServiceTest {
 
     @Test
     void addConference_happyPath() {
-        Conference conference = generateConference(Date.from(Instant.parse("2023-11-30T18:35:24.00Z")));
+        Conference conference = generateConference(Date.from(Instant.parse("2023-11-30T00:00:00.00Z")));
 
         when(repository.existsByName(any())).thenReturn(false);
         when(repository.existsByDate(any())).thenReturn(false);
@@ -63,7 +63,7 @@ class ConferenceServiceTest {
 
     @Test
     void addConference_whenConferenceWithDateAlreadyExist_thenDoNotProcessConference() {
-        Date conferenceDate = Date.from(Instant.parse("2023-11-30T18:35:24.00Z"));
+        Date conferenceDate = Date.from(Instant.parse("2023-11-30T00:00:00.00Z"));
 
         when(repository.existsByName("conf-name")).thenReturn(false);
         when(repository.existsByDate(conferenceDate)).thenReturn(true);
@@ -75,7 +75,7 @@ class ConferenceServiceTest {
     void updateConference_happyPath() {
         when(repository.existsByName("conf-name")).thenReturn(false);
 
-        service.updateConference(CONFERENCE_ID, generateConference(Date.from(Instant.parse("2023-11-30T18:35:24.00Z"))));
+        service.updateConference(CONFERENCE_ID, generateConference(Date.from(Instant.parse("2023-11-30T00:00:00.00Z"))));
         verify(repository).save(conferenceCaptor.capture());
 
         Conference conference = conferenceCaptor.getValue();

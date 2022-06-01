@@ -155,7 +155,6 @@ components:
           example: "2021-07-21"
         participantsNumber:
           type: integer
-          format: int64
           description: Conference participants number
           example: 20
           maximum: 100
