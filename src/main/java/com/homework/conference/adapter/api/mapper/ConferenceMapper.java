@@ -27,6 +27,10 @@ public interface ConferenceMapper {
 
     List<TalkApiDto> toTalksApiDto(List<TalkDto> talks);
 
+    ConferenceApiDto toConferenceApiDto(ConferenceDto conference);
+
+    TalkApiDto toTalkApiDto(TalkDto talk);
+
 //    @Mapping(target = "date", dateFormat = "yyyy-MM-dd")
 
 }

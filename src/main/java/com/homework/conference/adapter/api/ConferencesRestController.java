@@ -30,14 +30,14 @@ public class ConferencesRestController implements ConferencesApi {
 
     @Override
     public ResponseEntity<ConferenceApiDto> addConference(AddConferenceRequestApiDto addConferenceRequest) {
-        service.addConference(mapper.toAddOrUpdateConferenceRequest(addConferenceRequest));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(mapper.toConferenceApiDto(service.addConference(mapper.toAddOrUpdateConferenceRequest(addConferenceRequest))));
     }
 
     @Override
     public ResponseEntity<TalkApiDto> addTalkToConference(Long conferenceId, AddTalkRequestApiDto addTalkRequest) {
-        service.addTalk(conferenceId, mapper.toAddTalkDto(addTalkRequest));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(mapper.toTalkApiDto(service.addTalk(conferenceId, mapper.toAddTalkDto(addTalkRequest))));
     }
 
     @Override

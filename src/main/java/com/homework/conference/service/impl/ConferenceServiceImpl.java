@@ -17,8 +17,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ConferenceServiceImpl implements ConferenceService {
 
-    private static final long MONTH_MILLIS = 2_629_800_000L; // todo refactor
     private static final int MAX_AUTHOR_TALK_NUMBER = 3;
     private static final int MAX_CONFERENCE_PARTICIPANTS_NUMBER = 100;
 
@@ -74,9 +74,9 @@ public class ConferenceServiceImpl implements ConferenceService {
 
             Talk talkToAdd = mapper.toTalk(addTalkRequest);
             conference.getTalks().add(talkToAdd);
-            saveOrUpdateConference(conference);
+            Conference savedConferenceWithNewTalk = saveOrUpdateConference(conference);
             log.info("Talk with name: {} was added to conference with id: {}", addTalkRequest.getName(), conferenceId);
-            return mapper.toTalkDto(talkToAdd);
+            return mapper.toTalkDto(savedConferenceWithNewTalk.getTalks().stream().filter(t -> t.getName().equals(addTalkRequest.getName())).findFirst().get());
         } else {
             log.error("Fail to find conference with id: {}", conferenceId);
             throw new ConferenceNotFoundException();
@@ -147,7 +147,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     private void verifyTalkAddingDate(Conference conference, String talk) {
-        if (conference.getDate().getTime() - new Date().getTime() < MONTH_MILLIS) {
+        if (Instant.now().plus(Duration.ofDays(30)).isAfter(conference.getDate().toInstant())) {
             log.error("Fail to add talk with name: {} to conference with id: {} due to the deadline", talk, conference.getId());
             throw new IllegalArgumentException();
         }

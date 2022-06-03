@@ -17,9 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -90,7 +93,7 @@ class ConferenceServiceTest {
         when(repository.existsByName("conf-name")).thenReturn(false);
 
         service.updateConference(CONFERENCE_ID, generateAddOrUpdateConferenceRequest(Date.from(Instant.parse("2023-11-30T00:00:00.00Z"))));
-        verify(repository).save(conferenceCaptor.capture()); // todo
+        verify(repository).save(conferenceCaptor.capture());
 
         Conference conference = conferenceCaptor.getValue();
         assertThat(conference.getId()).isEqualTo(CONFERENCE_ID);
@@ -110,19 +113,19 @@ class ConferenceServiceTest {
                 .setName("conf-name")
                 .setSubject("subject")
                 .setParticipantsNumber(20)
-                .setDate(new Date(MAX_VALUE));
+                .setDate(Date.from(LocalDateTime.of(2100, 1, 1, 1, 1).toInstant(ZoneOffset.UTC)));
+
+        Talk talk = new Talk().setName("talk-name")
+                .setAuthor("author-name")
+                .setDescription("desc")
+                .setType(TalkType.TALK);
 
         when(repository.findById(CONFERENCE_ID))
                 .thenReturn(Optional.of(conference));
 
         service.addTalk(CONFERENCE_ID, generateAddTalkRequest("talk-name"));
 
-        verify(repository).save(conferenceCaptor.capture());
-
-        Conference conferenceWithTalk = conferenceCaptor.getValue();
-        assertThat(conferenceWithTalk.getId()).isEqualTo(CONFERENCE_ID);
-        assertThat(conferenceWithTalk.getTalks().size()).isEqualTo(1);
-        assertThat(conferenceWithTalk.getTalks().get(0).getName()).isEqualTo("talk-name");
+        verify(repository).save(Mockito.eq(conference.setTalks(List.of(talk))));
     }
 
     @Test
@@ -132,7 +135,7 @@ class ConferenceServiceTest {
                 .setName("conf-name")
                 .setSubject("subject")
                 .setParticipantsNumber(20)
-                .setDate(new Date(0));
+                .setDate(Date.from(LocalDateTime.of(2010, 1, 1, 1, 1).toInstant(ZoneOffset.UTC)));
 
         when(repository.findById(CONFERENCE_ID))
                 .thenReturn(Optional.of(conference));

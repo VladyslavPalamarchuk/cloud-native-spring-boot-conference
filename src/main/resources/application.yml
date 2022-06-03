@@ -11,6 +11,8 @@ spring:
     username: ${DB_USERNAME} # todo remove. see example properties
     password: ${DB_PASSWORD} # todo remove
     driverClassName: org.postgresql.Driver
+  flyway:
+    baselineOnMigrate: true
 
 logging:
   level:
